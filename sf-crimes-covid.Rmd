@@ -18,29 +18,43 @@ This notebook is licensed under the MIT License. If you use the code or data vis
 ```{r}
 library(tidyverse)
 library(scales)
-library(lubridate)
 
 sessionInfo()
 ```
 
 ```{r}
-theme_set(theme_minimal(base_size=8, base_family="Source Sans Pro") +
-            theme(plot.title = element_text(family="Source Sans Pro Bold", margin=margin(t = -0.1, b = 0.1, unit='cm'), size=10),
-                  axis.title.x = element_text(),
-                  axis.title.y = element_text(),
-                  axis.text.y = element_text(family="Fira Code", size=4),
-                  axis.text.x = element_text(family="Fira Code", size=4),
-                  plot.subtitle = element_text(family="Source Sans Pro Semibold", color="#969696", size=8),
-                  plot.caption = element_text(color="#969696"),
-                  legend.title = element_text(),
-                  legend.key.width = unit(0.25, unit='cm')))
+theme_set(
+  theme_minimal(base_size = 8, base_family = "Source Sans Pro") +
+    theme(
+      plot.title = element_text(
+        family = "Source Sans Pro Bold",
+        margin = margin(t = -0.1, b = 0.1, unit = 'cm'),
+        size = 10
+      ),
+      axis.title.x = element_text(),
+      axis.title.y = element_text(),
+      axis.text.y = element_text(family = "Fira Code", size =
+                                   4),
+      axis.text.x = element_text(family = "Fira Code", size =
+                                   4),
+      plot.subtitle = element_text(
+        family = "Source Sans Pro Semibold",
+        color = "#969696",
+        size = 8
+      ),
+      plot.caption = element_text(color = "#969696"),
+      legend.title = element_text(),
+      legend.key.width = unit(0.25, unit = 'cm')
+    )
+)
 ```
 
 
 # Load Data
 
 ```{r}
-file_path <- "/Users/maxwoolf/Downloads/Police_Department_Incident_Reports__2018_to_Present.csv"
+file_path <-
+  "/Users/maxwoolf/Downloads/Police_Department_Incident_Reports__2018_to_Present.csv"
 start_date <- "2020-03-01"
 end_date <- "2020-03-28"   # last full day of data
 
@@ -49,9 +63,6 @@ df <- read_csv(file_path) %>%
 
 df %>% head()
 ```
-
-Filter to only categories w/ atleast 10 at one day to clean up the cart.
-
 
 ```{r}
 df_agg <- df %>%
@@ -62,20 +73,18 @@ df_agg <- df %>%
 df_agg %>% head()
 ```
 
-Filter to only categories w/ atleast 10 at one day to clean up the cart.
+Filter to only categories w/ atleast 10 at one day to clean up the chart for more common crime categories.
 
 ```{r}
 categories <- df_agg %>%
   filter(n >= 10) %>%
   pull(category) %>%
-  unique() %>%
-  filter()
+  unique()
 
 categories
 ```
 
-Remove `Offences Against The Family And Children` because it's too verbose, and removing it gets the chart to a nice 4x4 square.
-
+Also remove `Offences Against The Family And Children` because it's too verbose, and removing it gets the chart to a nice 4x4 square.
 
 ```{r}
 sip_date <- "2020-03-16"
@@ -91,7 +100,7 @@ plot <-
   geom_vline(
     aes(xintercept = as.Date(sip_date)),
     color = "black",
-    linetype = "dashed",
+    # linetype = "dashed",
     size = 0.25
   ) +
   geom_line() +
@@ -102,17 +111,20 @@ plot <-
   ) +
   scale_y_continuous(labels = comma_format(accuracy = 1), minor_breaks = NULL) +
   scale_color_hue(l = 50, guide = F) +
-  facet_wrap( ~ category, scales = "free") +
-  labs(title = "Reported Daily Crime Incidents in San Francisco Before/After COVID-19 Shelter-In-Place",
-       subtitle = "For March 2020. Vertical dotted line indicates SIP announcement on March 16th. Data via datasf.org.",
-       x = "Date",
-       y = "# Reported Incidents",
-       caption = "Max Woolf — @minimaxir")
+  facet_wrap(~ category, scales = "free") +
+  labs(
+    title = "Reported Daily Crime Incidents in San Francisco Before/After COVID-19 Shelter-In-Place",
+    subtitle = "For March 2020. Vertical line indicates SIP announcement on March 16th. Data via datasf.org.",
+    x = "Date",
+    y = "# Reported Incidents",
+    caption = "Max Woolf — @minimaxir"
+  )
 
-ggsave('sf-crimes-covid.png', plot, width = 6, height = 4)
+ggsave('sf-crimes-covid.png',
+       plot,
+       width = 6,
+       height = 4)
 ```
-
-
 
 # LICENSE
 
